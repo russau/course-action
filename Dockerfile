@@ -6,4 +6,4 @@ RUN apt update && \
     apt install zip && \
     pip3 install -r /requirements.txt
 
-ENTRYPOINT ["/entrypoint.py"]
+ENTRYPOINT ["python", "/entrypoint.py"]
