@@ -1,0 +1,6 @@
+name: 'Course Builder'
+description: 'Combines training and creates a zip'
+author: 'russ russell.sayers@gmail.com'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
