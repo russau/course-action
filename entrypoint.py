@@ -6,6 +6,7 @@ import os
 source_bucket="russ-courses-source"
 destination_bucket="russ-courses-built"
 s3 = boto3.client('s3')
+dynamodb = boto3.client('dynamodb')
 workspace = os.getenv('GITHUB_WORKSPACE', default="/app")
 
 # open and read manifest yaml file
@@ -41,3 +42,29 @@ for language in manifest['languages']:
     print(f" Uploading {zipname} to {destination_bucket}")
     s3.upload_file(f"/tmp/{zipname}.zip", destination_bucket, zipname)
     print()
+
+    print("Updating LMS APIs")
+    print("=========")
+    print()
+
+    print("Updating Course Index")
+    print("=========")
+    dynamodb.update_item(
+        TableName='courses-app-Courses-NALH5ICC3YBC',
+        Key={'id': {'S': f'{COURSE_CODE}_{version}_{language_code}'}},
+        ExpressionAttributeNames={
+            '#N': 'name',
+        },
+        ExpressionAttributeValues={
+            ':code': {'S': COURSE_CODE },
+            ':name': {'S': language['name']},
+            ':language_code': {'S': language_code},
+            ':version': {'S': version'},
+            ':zip_file': {'S': zipname},
+        },
+        UpdateExpression="SET code = :code, #N = :name, language_code = :language_code, version = :version, zip_file = :zip_file",
+        ReturnValues="UPDATED_NEW"
+    )
+    print()
+
+    print("Finshed 🎉")
