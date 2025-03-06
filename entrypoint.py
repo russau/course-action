@@ -59,7 +59,7 @@ for language in manifest['languages']:
             ':code': {'S': COURSE_CODE },
             ':name': {'S': language['name']},
             ':language_code': {'S': language_code},
-            ':version': {'S': version'},
+            ':version': {'S': version},
             ':zip_file': {'S': zipname},
         },
         UpdateExpression="SET code = :code, #N = :name, language_code = :language_code, version = :version, zip_file = :zip_file",
