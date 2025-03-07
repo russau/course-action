@@ -31,17 +31,21 @@ for language in manifest['languages']:
     os.makedirs(temp_dir, exist_ok=True)
 
     # download all the objects with a prefix from an s3 bucket into a tmp
-    for obj in s3.list_objects(Bucket=source_bucket, Prefix=prefix)['Contents']:
-        print(f" Downloading {obj['Key']}")
-        s3.download_file(source_bucket, obj['Key'], f"/tmp/{obj['Key']}")
-
-    # create a zip file of each directory
-    zipname = f"{COURSE_CODE}_{version}_{language_code}.zip"
-    print(f" Creating zip file {zipname}")
-    os.system(f"cd {temp_dir} && zip -r /tmp/{zipname}.zip . > /dev/null")
-    print(f" Uploading {zipname} to {destination_bucket}")
-    s3.upload_file(f"/tmp/{zipname}.zip", destination_bucket, zipname)
-    print()
+    s3_objects = s3.list_objects(Bucket=source_bucket, Prefix=prefix)
+    if 'Contents' in s3_objects:
+        for obj in s3_objects['Contents']:
+            print(f" Downloading {obj['Key']}")
+            s3.download_file(source_bucket, obj['Key'], f"/tmp/{obj['Key']}")
+    
+        # create a zip file of each directory
+        zipname = f"{COURSE_CODE}_{version}_{language_code}.zip"
+        print(f" Creating zip file {zipname}")
+        os.system(f"cd {temp_dir} && zip -r /tmp/{zipname}.zip . > /dev/null")
+        print(f" Uploading {zipname} to {destination_bucket}")
+        s3.upload_file(f"/tmp/{zipname}.zip", destination_bucket, zipname)
+        print()
+    else:
+        print(f"Warning cannot find source files for {prefix}"
 
     print("Updating LMS APIs")
     print("=========")
