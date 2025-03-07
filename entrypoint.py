@@ -45,7 +45,7 @@ for language in manifest['languages']:
         s3.upload_file(f"/tmp/{zipname}.zip", destination_bucket, zipname)
         print()
     else:
-        print(f"Warning cannot find source files for {prefix}"
+        print(f"Warning cannot find source files for {prefix}")
 
     print("Updating LMS APIs")
     print("=========")
